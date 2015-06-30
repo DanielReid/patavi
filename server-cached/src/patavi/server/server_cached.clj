@@ -34,7 +34,7 @@
   (let [method (:method data)
         linearModel (:linearModel data)
         problem (json/parse-string (:problem data))
-        from-patavi (fn [] (cache-result (:id data) (handlers/service-run-rpc method [problem linearModel])))
+        from-patavi (fn [] (cache-result (:id data) (handlers/service-run-rpc method (assoc problem :linearModel linearModel))))
         from-cache (fn [] (json/parse-string (:result data)))
         run (if (nil? (:result data)) from-patavi from-cache)]
     (wamp/with-channel-validation request channel handlers/origin-re
