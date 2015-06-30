@@ -32,8 +32,9 @@
 
 (defn handle-service-with-cache [request data]
   (let [method (:method data)
+        linearModel (:linearModel data)
         problem (json/parse-string (:problem data))
-        from-patavi (fn [] (cache-result (:id data) (handlers/service-run-rpc method problem)))
+        from-patavi (fn [] (cache-result (:id data) (handlers/service-run-rpc method (assoc problem :linearModel linearModel))))
         from-cache (fn [] (json/parse-string (:result data)))
         run (if (nil? (:result data)) from-patavi from-cache)]
     (wamp/with-channel-validation request channel handlers/origin-re
@@ -45,7 +46,7 @@
 (defn println* [x] (println x) x)
 
 (defn handle-with-cache [id req]
-  (let [call (jdbc/query db-url ["select id, method, problem, result from pataviTask where id = ?" (Integer. id)])]
+  (let [call (jdbc/query db-url ["select id, method, linearModel, problem, result from pataviTask where id = ?" (Integer. id)])]
     (if (empty? call)
         { :status 404 :body "No such task" }
         (handle-service-with-cache req (first call)))))
