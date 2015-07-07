@@ -20,7 +20,7 @@
 (declare in-dev?)
 
 (def cache-db-url
-  (if (env :patavi-cache-db-url) 
+  (if (env :patavi-cache-db-url)
     (env :patavi-cache-db-url)
     (throw (RuntimeException. "PATAVI_CACHE_DB_URL not set"))))
 (def db-url {:connection-uri (str "jdbc:" cache-db-url)})
@@ -46,7 +46,7 @@
 (defn println* [x] (println x) x)
 
 (defn handle-with-cache [id req]
-  (let [call (jdbc/query db-url ["select id, method, linearModel, problem, result from pataviTask where id = ?" (Integer. id)])]
+  (let [call (jdbc/query db-url ["select id, method, problem, result from pataviTask where id = ?" (Integer. id)])]
     (if (empty? call)
         { :status 404 :body "No such task" }
         (handle-service-with-cache req (first call)))))
