@@ -1,3 +1,6 @@
+var assert = require('assert');
+var testUrl = process.env.PATAVI_TEST_URL;
+
 module.exports = {
   "Smaa v2 worker test": function(browser) {
 
@@ -9,8 +12,9 @@ module.exports = {
       return string.slice(0, prefix.length) == prefix;
     }
 
+    assert(testUrl, 'test url environment not set');
     browser
-      .url("https://patavi.drugis.org/")
+      .url(testUrl)
       .waitForElementVisible('body', 5000)
       .clearValue('body > div:nth-child(4) > div.columns.large-4 > input')
       .setValue('body > div:nth-child(4) > div.columns.large-4 > input', method)
@@ -18,7 +22,7 @@ module.exports = {
       .setValue('body > div:nth-child(4) > div.columns.large-4 > textarea', input)
       .assert.containsText('body > div:nth-child(4) > div.columns.large-4 > button', 'Submit new task')
       .click('body > div:nth-child(4) > div.columns.large-4 > button')
-      .pause(2000)
+      .pause(300000) // 5 minutes is current maximum patavi task length
       .assert.containsText("body > div:nth-child(4) > div:nth-child(4) > h2", 'Results')
       .end();
   }
